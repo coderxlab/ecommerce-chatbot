@@ -1,0 +1,717 @@
+{
+  "name": "Ecommerce Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nI'm a online shop assistant at Trendi. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -280,
+        0
+      ],
+      "id": "5c5fde1d-17fe-4ef6-ac65-ac5249538f34",
+      "name": "When chat message received",
+      "webhookId": "ddbb217e-0cbf-4557-be52-4400a03ae949"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"category\": {\n      \"type\": [\"string\", \"null\"],\n      \"enum\": [\"Search Product\", \"Retrieve Order\", \"Place Order\", \"Retrieve Delivery Information\", \"Others\"],\n      \"description\": \"The user's intent\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        200
+      ],
+      "id": "40416ebd-be46-4442-a793-eed4c5693ebb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-3.5-turbo",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        420,
+        200
+      ],
+      "id": "ff61dea6-130c-49ef-8fe7-66aac8daec9c",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.category }}",
+                    "rightValue": "Search Product",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "22e7f39f-18f4-403e-a022-e5284318fa5f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0a277dd8-e7c4-4cba-8a5b-25b32c892535",
+                    "leftValue": "={{ $json.output.category }}",
+                    "rightValue": "Retrieve Order",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1879bc52-d096-4979-a2a4-d5a3ea6210be",
+                    "leftValue": "={{ $json.output.category }}",
+                    "rightValue": "Place Order",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3d6cf542-c3a9-4e35-9f7c-743f02e215ba",
+                    "leftValue": "={{ $json.output.category }}",
+                    "rightValue": "Retrieve Delivery Information",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "70fdd88c-f05e-4264-85ef-8d6a0ecb2ca4",
+                    "leftValue": "={{ $json.output.category }}",
+                    "rightValue": "Others",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        900,
+        -40
+      ],
+      "id": "357e141d-7e33-411c-9fc6-63dc59924e06",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        -500
+      ],
+      "id": "30205d26-a3b0-4c87-889f-46f5242fd659",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
+        "url": "http://localhost:8080/api/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "pageNumber",
+              "value": "=1"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "=products"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1580,
+        -500
+      ],
+      "id": "73c9f765-12d8-4e29-a40f-aed838c4f9fa",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        660
+      ],
+      "id": "1dc711be-5250-4db1-bd1b-5e696fd894ef",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "You are Trendi's online shopping assistant, designed to help customers with product searches, order retrieval, order placement, delivery information, and other general inquiries. Always identify the customer's primary intent from these five categories, ask clarifying questions when needed, provide concise and accurate information, verify order details before sharing information, maintain customer privacy, and use a conversational yet professional tone that represents the Trendi brand positively while ensuring a seamless shopping experience."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        500
+      ],
+      "id": "8e49e12b-3fab-47c8-a8e8-7103b6f29b03",
+      "name": "Other Question Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a specialized classifier for e-commerce user intents. Your task is to analyze user messages and identify their primary intent according to a specific JSON schema. You should categorize each query based on whether the user is trying to search for products, retrieve order information, place an order, or get delivery details."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        440,
+        0
+      ],
+      "id": "45892a21-bbbe-4c29-aad0-f14e448834f0",
+      "name": "Intent Classifier",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "You are an e-commerce product search assistant. Your primary function is to help customers find products they're looking for. When users describe products or provide search terms, extract relevant search terms and use the product search tool with the appropriate keyword and pagination parameters. Present all responses in a proper format, including properly formatted product listings. Display images using markdown format (![Product Name](image_url)) rather than just showing links. When displaying results, always include product images if they are provided in the API response. Never make up or hallucinate product information - only present information that is explicitly returned by the API. If certain details are not available in the API response, acknowledge this limitation rather than inventing information. If the product search tool returns nothing, just respond that there is no product available in the store. Your responses should be factual and based solely on the data received from the product search tool.",
+          "maxIterations": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        -720
+      ],
+      "id": "ae4ffed0-fac6-4c70-bd6d-f51bb2f2cc22",
+      "name": "Product Search Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "You are an order retrieval assistant. Your primary function is to help customers find information about \ntheir orders.\n\nWhen users request order details, FIRST, extract the email address or order ID associated with their \naccount. THEN:\n• If there is no email or order ID, politely ask them to provide either the email associated with their \norder or their order ID before proceeding.\n• If there is an email, USE the order retrieval tool with the appropriate email.\n• If there is an order ID, USE the order retrieval tool with the appropriate order ID.\n\nPresent all responses in a proper format, including properly formatted order listings with complete details.\nDisplay order items using clear, structured layouts rather than just showing raw data. When displaying \nresults, always include order status, dates, and item details if they are provided in the API response.\n\nIf certain details are not available in the API response, acknowledge this limitation rather than inventing \ninformation. If the order retrieval tool returns nothing, respond that no orders were found for the provided\nemail address or order ID."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        -340
+      ],
+      "id": "e400b8f5-a82e-4651-8a57-a1c9574bf748",
+      "name": "Order Retrieval Agent"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -140
+      ],
+      "id": "1f87a4f1-7752-4360-8cc1-6bb05fcb697a",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the order retrieval API endpoint to access customer order information based on user queries.\nNote when extracting query parameters:\n- Either the user's email OR order ID is required to retrieve order information.\n- When a user asks \"show me my recent order for example@email.com\" or \"check my orders at user@trendi.com\", extract the email address from their query.\n- When a user asks \"check order #12345\", extract the order ID from their query.\n- If neither email nor order ID is provided in the query, ask the user to provide either one before proceeding.\n- Only proceed with the order retrieval once either a valid email address OR order ID has been provided by the user.\n- If the user provides both an order ID and email address, you can use both parameters to retrieve more specific order information.",
+        "url": " http://localhost:8080/api/orders/track",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "orderId",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        -140
+      ],
+      "id": "8bb66121-1d28-46dd-93e6-6061cfd125b6",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        240
+      ],
+      "id": "8de40740-cc51-4400-a6f8-992b055d890b",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
+        "url": "http://localhost:8080/api/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "pageNumber",
+              "value": "=1"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "=products"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        240
+      ],
+      "id": "f840c561-555b-4611-b820-f85e6b08e800",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "You are an e-commerce product search assistant. Your primary function is to help customers find products they're looking for. When users describe products or provide search terms, extract relevant search terms and use the product search tool with the appropriate keyword and pagination parameters. Present all responses in a proper format, including properly formatted product listings. Display images using markdown format (![Product Name](image_url)) rather than just showing links. When displaying results, always include product images if they are provided in the API response. Never make up or hallucinate product information - only present information that is explicitly returned by the API. If certain details are not available in the API response, acknowledge this limitation rather than inventing information. If the product search tool returns nothing, just respond that there is no product available in the store. Your responses should be factual and based solely on the data received from the product search tool.",
+          "maxIterations": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        20
+      ],
+      "id": "75330015-eaf0-434c-b2d3-bded01193a81",
+      "name": "Order Placement Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1440,
+        -500
+      ],
+      "id": "b60bd939-1006-4fc0-b017-fbea7c6f98cf",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1420,
+        -140
+      ],
+      "id": "700b93f3-36d9-4843-92d9-4340e942ecff",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1440,
+        240
+      ],
+      "id": "67f662c9-81c3-4a80-a7ab-77dab0dd6d19",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1400,
+        660
+      ],
+      "id": "dbae0be3-b386-4e59-a7c1-09a9e46502fd",
+      "name": "Simple Memory3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Product Search Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Order Retrieval Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Order Placement Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Other Question Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Product Search Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Product Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Other Question Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Classifier": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Order Retrieval Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Order Retrieval Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Order Placement Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Order Placement Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Product Search Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Order Retrieval Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Order Placement Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "Other Question Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1d9bab4c-759a-463a-b7ee-e9701a606231",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3486bf56d2f869a09422d9a225cc5397d03576784dc768e07977a5c6d748ec6"
+  },
+  "id": "m8KSB8eRNGuWbb9z",
+  "tags": []
+}
