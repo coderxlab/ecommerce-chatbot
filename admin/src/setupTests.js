@@ -5,4 +5,4 @@
 import '@testing-library/jest-dom';
 
 // Set up environment variables for testing
-process.env.REACT_APP_BACKEND_URL = 'http://localhost:8080';
+process.env.REACT_APP_API_URL = 'http://localhost:8080';

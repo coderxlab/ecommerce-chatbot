@@ -2,3 +2,5 @@
 .env.production
 node_modules
 deployment-instructions.md
+.DS_Store
+ec2_key.pem

@@ -40,7 +40,7 @@ A simple admin panel for managing the e-commerce backend with products, users, o
    - Copy `.env.example` to `.env`
    - Update the variables in `.env` with your configuration:
      ```
-     REACT_APP_BACKEND_URL=http://localhost:8080  # Your backend API URL
+     REACT_APP_API_URL=http://localhost:8080  # Your backend API URL
      ```
 
 3. Start the development server:

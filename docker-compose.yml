@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./backend/.env.production
+      - ./backend/.env
     restart: always
     networks:
       - ecommerce-network
@@ -18,7 +18,7 @@ services:
     ports:
       - "80:80"
     env_file:
-      - ./frontend/.env.production
+      - ./frontend/.env
     depends_on:
       - backend
     restart: always
@@ -32,7 +32,7 @@ services:
     ports:
       - "8080:80"
     env_file:
-      - ./admin/.env.production
+      - ./admin/.env
     depends_on:
       - backend
     restart: always
