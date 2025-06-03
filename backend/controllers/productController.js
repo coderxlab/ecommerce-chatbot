@@ -3,7 +3,7 @@ const Product = require('../models/productModel');
 const cloudinary = require('../config/cloudinary');
 
 // @desc    Fetch all products
-// @route   GET /api/products
+// @route   GET /products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
   const pageSize = 10;
@@ -27,7 +27,7 @@ const getProducts = asyncHandler(async (req, res) => {
 });
 
 // @desc    Fetch single product
-// @route   GET /api/products/:id
+// @route   GET /products/:id
 // @access  Public
 const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -41,7 +41,7 @@ const getProductById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a product
-// @route   DELETE /api/products/:id
+// @route   DELETE /products/:id
 // @access  Private/Admin
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -61,7 +61,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create a product
-// @route   POST /api/products
+// @route   POST /products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
   const {
@@ -111,7 +111,7 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a product
-// @route   PUT /api/products/:id
+// @route   PUT /products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
   const {
@@ -170,7 +170,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create new review
-// @route   POST /api/products/:id/reviews
+// @route   POST /products/:id/reviews
 // @access  Private
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
@@ -211,7 +211,7 @@ const createProductReview = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get top rated products
-// @route   GET /api/products/top
+// @route   GET /products/top
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).sort({ rating: -1 }).limit(3);

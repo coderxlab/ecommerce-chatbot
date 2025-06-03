@@ -3,7 +3,7 @@ const DeliveryRoute = require('../models/deliveryRouteModel');
 const Order = require('../models/orderModel');
 
 // @desc    Create new delivery route
-// @route   POST /api/delivery/routes
+// @route   POST /delivery/routes
 // @access  Private/Admin
 const createDeliveryRoute = asyncHandler(async (req, res) => {
   const { name, driver, vehicle, startLocation, stops } = req.body;
@@ -21,7 +21,7 @@ const createDeliveryRoute = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all delivery routes
-// @route   GET /api/delivery/routes
+// @route   GET /delivery/routes
 // @access  Private/Admin
 const getDeliveryRoutes = asyncHandler(async (req, res) => {
   const routes = await DeliveryRoute.find({})
@@ -32,7 +32,7 @@ const getDeliveryRoutes = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get delivery route by ID
-// @route   GET /api/delivery/routes/:id
+// @route   GET /delivery/routes/:id
 // @access  Private/Admin
 const getDeliveryRouteById = asyncHandler(async (req, res) => {
   const route = await DeliveryRoute.findById(req.params.id)
@@ -48,7 +48,7 @@ const getDeliveryRouteById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update delivery route
-// @route   PUT /api/delivery/routes/:id
+// @route   PUT /delivery/routes/:id
 // @access  Private/Admin
 const updateDeliveryRoute = asyncHandler(async (req, res) => {
   const { name, driver, vehicle, startLocation, stops, status, startTime, endTime, totalDistance } = req.body;
@@ -75,7 +75,7 @@ const updateDeliveryRoute = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete delivery route
-// @route   DELETE /api/delivery/routes/:id
+// @route   DELETE /delivery/routes/:id
 // @access  Private/Admin
 const deleteDeliveryRoute = asyncHandler(async (req, res) => {
   const route = await DeliveryRoute.findById(req.params.id);
@@ -101,7 +101,7 @@ const deleteDeliveryRoute = asyncHandler(async (req, res) => {
 });
 
 // @desc    Add order to delivery route
-// @route   PUT /api/delivery/routes/:id/add-order
+// @route   PUT /delivery/routes/:id/add-order
 // @access  Private/Admin
 const addOrderToRoute = asyncHandler(async (req, res) => {
   const { orderId, address, estimatedArrival } = req.body;
@@ -144,7 +144,7 @@ const addOrderToRoute = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update stop status in delivery route
-// @route   PUT /api/delivery/routes/:id/stops/:stopId
+// @route   PUT /delivery/routes/:id/stops/:stopId
 // @access  Private
 const updateStopStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
@@ -190,7 +190,7 @@ const updateStopStatus = asyncHandler(async (req, res) => {
 });
 
 // @desc    Start delivery route
-// @route   PUT /api/delivery/routes/:id/start
+// @route   PUT /delivery/routes/:id/start
 // @access  Private
 const startDeliveryRoute = asyncHandler(async (req, res) => {
   const route = await DeliveryRoute.findById(req.params.id);
@@ -208,7 +208,7 @@ const startDeliveryRoute = asyncHandler(async (req, res) => {
 });
 
 // @desc    Complete delivery route
-// @route   PUT /api/delivery/routes/:id/complete
+// @route   PUT /delivery/routes/:id/complete
 // @access  Private
 const completeDeliveryRoute = asyncHandler(async (req, res) => {
   const route = await DeliveryRoute.findById(req.params.id);
@@ -226,7 +226,7 @@ const completeDeliveryRoute = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get routes assigned to driver
-// @route   GET /api/delivery/driver-routes
+// @route   GET /delivery/driver-routes
 // @access  Private
 const getDriverRoutes = asyncHandler(async (req, res) => {
   const routes = await DeliveryRoute.find({ driver: req.user._id })

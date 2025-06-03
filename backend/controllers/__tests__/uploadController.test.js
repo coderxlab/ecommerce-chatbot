@@ -19,7 +19,7 @@ const mockMulter = (req, res, next) => {
   next();
 };
 
-app.post('/api/upload/cloudinary', mockMulter, uploadToCloudinary);
+app.post('/upload/cloudinary', mockMulter, uploadToCloudinary);
 
 describe('Upload Controller', () => {
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe('Upload Controller', () => {
     process.env.CLOUDINARY_API_SECRET = 'test';
 
     const response = await request(app)
-      .post('/api/upload/cloudinary')
+      .post('/upload/cloudinary')
       .attach('image', Buffer.from('fake image'), 'test-image.jpg');
 
     expect(response.status).toBe(200);
@@ -57,7 +57,7 @@ describe('Upload Controller', () => {
     delete process.env.CLOUDINARY_API_SECRET;
 
     const response = await request(app)
-      .post('/api/upload/cloudinary')
+      .post('/upload/cloudinary')
       .attach('image', Buffer.from('fake image'), 'test-image.jpg');
 
     expect(response.status).toBe(500);
@@ -74,7 +74,7 @@ describe('Upload Controller', () => {
     fs.unlinkSync.mockImplementation(() => {});
 
     const response = await request(app)
-      .post('/api/upload/cloudinary')
+      .post('/upload/cloudinary')
       .attach('image', Buffer.from('fake image'), 'test-image.jpg');
 
     expect(response.status).toBe(500);

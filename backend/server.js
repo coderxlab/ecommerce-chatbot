@@ -30,11 +30,11 @@ app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Mount routers
-app.use('/api/products', productRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/delivery', deliveryRoutes);
-app.use('/api/upload', uploadRoutes);
+app.use('/products', productRoutes);
+app.use('/users', userRoutes);
+app.use('/orders', orderRoutes);
+app.use('/delivery', deliveryRoutes);
+app.use('/upload', uploadRoutes);
 
 // Health check route
 app.get('/', (req, res) => {

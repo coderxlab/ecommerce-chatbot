@@ -3,7 +3,7 @@ const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 
 // @desc    Upload image to cloudinary
-// @route   POST /api/upload/cloudinary
+// @route   POST /upload/cloudinary
 // @access  Private
 const uploadToCloudinary = asyncHandler(async (req, res) => {
   try {
@@ -48,7 +48,7 @@ const uploadToCloudinary = asyncHandler(async (req, res) => {
 });
 
 // @desc    Upload image to local storage
-// @route   POST /api/upload
+// @route   POST /upload
 // @access  Private
 const uploadImage = asyncHandler(async (req, res) => {
   if (!req.file) {
@@ -63,7 +63,7 @@ const uploadImage = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete image from cloudinary
-// @route   DELETE /api/upload/cloudinary/:id
+// @route   DELETE /upload/cloudinary/:id
 // @access  Private/Admin
 const deleteFromCloudinary = asyncHandler(async (req, res) => {
   const { id } = req.params;

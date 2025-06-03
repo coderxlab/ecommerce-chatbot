@@ -56,7 +56,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return orders for valid email', async () => {
     const res = await request(app)
-      .get('/api/orders/track').query({ email: 'test@example.com' });
+      .get('/orders/track').query({ email: 'test@example.com' });
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();
@@ -75,7 +75,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return order for valid orderId', async () => {
     const res = await request(app)
-      .get('/api/orders/track').query({ orderId: testOrder._id.toString() });
+      .get('/orders/track').query({ orderId: testOrder._id.toString() });
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();
@@ -85,7 +85,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return order when both email and orderId are provided', async () => {
     const res = await request(app)
-      .get('/api/orders/track').query({ 
+      .get('/orders/track').query({ 
         email: 'test@example.com',
         orderId: testOrder._id.toString()
       });
@@ -97,7 +97,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return 404 for non-existent email', async () => {
     const res = await request(app)
-      .get('/api/orders/track').query({ email: 'nonexistent@example.com' });
+      .get('/orders/track').query({ email: 'nonexistent@example.com' });
 
     expect(res.statusCode).toBe(404);
     expect(res.body.message).toBe('No orders found for this email');
@@ -105,7 +105,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return 400 for invalid email format', async () => {
     const res = await request(app)
-      .get('/api/orders/track').query({ email: 'invalid-email' });
+      .get('/orders/track').query({ email: 'invalid-email' });
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Invalid email format');
@@ -113,7 +113,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return 400 for invalid orderId format', async () => {
     const res = await request(app)
-      .get('/api/orders/track').query({ orderId: 'invalid-id' });
+      .get('/orders/track').query({ orderId: 'invalid-id' });
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Invalid orderId format');
@@ -121,7 +121,7 @@ describe('Order Tracking Endpoint', () => {
 
   it('should return 400 when neither email nor orderId is provided', async () => {
     const res = await request(app)
-      .get('/api/orders/track');
+      .get('/orders/track');
 
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe('Please provide either email or orderId');
@@ -144,7 +144,7 @@ describe('Order Tracking Endpoint', () => {
     });
 
     const res = await request(app)
-      .get('/api/orders/track').query({ orderId: draftOrder._id.toString() });
+      .get('/orders/track').query({ orderId: draftOrder._id.toString() });
 
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBeTruthy();

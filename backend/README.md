@@ -23,50 +23,50 @@ A complete backend for an e-commerce platform with products, users, orders, and 
 ## API Endpoints
 
 ### Users
-- `POST /api/users` - Register a new user
-- `POST /api/users/login` - Authenticate user & get token
-- `GET /api/users/profile` - Get user profile
-- `PUT /api/users/profile` - Update user profile
-- `GET /api/users` - Get all users (Admin only)
-- `DELETE /api/users/:id` - Delete user (Admin only)
-- `GET /api/users/:id` - Get user by ID (Admin only)
-- `PUT /api/users/:id` - Update user (Admin only)
+- `POST /users` - Register a new user
+- `POST /users/login` - Authenticate user & get token
+- `GET /users/profile` - Get user profile
+- `PUT /users/profile` - Update user profile
+- `GET /users` - Get all users (Admin only)
+- `DELETE /users/:id` - Delete user (Admin only)
+- `GET /users/:id` - Get user by ID (Admin only)
+- `PUT /users/:id` - Update user (Admin only)
 
 ### Products
-- `GET /api/products` - Fetch all products
-- `GET /api/products/:id` - Fetch single product
-- `POST /api/products` - Create a product (Admin only)
-- `PUT /api/products/:id` - Update a product (Admin only)
-- `DELETE /api/products/:id` - Delete a product (Admin only)
-- `POST /api/products/:id/reviews` - Create new review
-- `GET /api/products/top` - Get top rated products
+- `GET /products` - Fetch all products
+- `GET /products/:id` - Fetch single product
+- `POST /products` - Create a product (Admin only)
+- `PUT /products/:id` - Update a product (Admin only)
+- `DELETE /products/:id` - Delete a product (Admin only)
+- `POST /products/:id/reviews` - Create new review
+- `GET /products/top` - Get top rated products
 
 ### Orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders/myorders` - Get logged in user orders
-- `GET /api/orders/:id` - Get order by ID
-- `PUT /api/orders/:id/pay` - Update order to paid
-- `PUT /api/orders/:id/deliver` - Update order to delivered (Admin only)
-- `GET /api/orders` - Get all orders (Admin only)
-- `PUT /api/orders/:id/status` - Update order status (Admin only)
-- `PUT /api/orders/:id/cancel` - Cancel order
+- `POST /orders` - Create new order
+- `GET /orders/myorders` - Get logged in user orders
+- `GET /orders/:id` - Get order by ID
+- `PUT /orders/:id/pay` - Update order to paid
+- `PUT /orders/:id/deliver` - Update order to delivered (Admin only)
+- `GET /orders` - Get all orders (Admin only)
+- `PUT /orders/:id/status` - Update order status (Admin only)
+- `PUT /orders/:id/cancel` - Cancel order
 
 ### Delivery Routes
-- `POST /api/delivery/routes` - Create new delivery route (Admin only)
-- `GET /api/delivery/routes` - Get all delivery routes (Admin only)
-- `GET /api/delivery/routes/:id` - Get delivery route by ID
-- `PUT /api/delivery/routes/:id` - Update delivery route (Admin only)
-- `DELETE /api/delivery/routes/:id` - Delete delivery route (Admin only)
-- `PUT /api/delivery/routes/:id/add-order` - Add order to delivery route (Admin only)
-- `PUT /api/delivery/routes/:id/stops/:stopId` - Update stop status
-- `PUT /api/delivery/routes/:id/start` - Start delivery route
-- `PUT /api/delivery/routes/:id/complete` - Complete delivery route
-- `GET /api/delivery/driver-routes` - Get routes assigned to driver
+- `POST /delivery/routes` - Create new delivery route (Admin only)
+- `GET /delivery/routes` - Get all delivery routes (Admin only)
+- `GET /delivery/routes/:id` - Get delivery route by ID
+- `PUT /delivery/routes/:id` - Update delivery route (Admin only)
+- `DELETE /delivery/routes/:id` - Delete delivery route (Admin only)
+- `PUT /delivery/routes/:id/add-order` - Add order to delivery route (Admin only)
+- `PUT /delivery/routes/:id/stops/:stopId` - Update stop status
+- `PUT /delivery/routes/:id/start` - Start delivery route
+- `PUT /delivery/routes/:id/complete` - Complete delivery route
+- `GET /delivery/driver-routes` - Get routes assigned to driver
 
 ### Uploads
-- `POST /api/upload` - Upload image to local storage
-- `POST /api/upload/cloudinary` - Upload image to Cloudinary
-- `DELETE /api/upload/cloudinary/:id` - Delete image from Cloudinary (Admin only)
+- `POST /upload` - Upload image to local storage
+- `POST /upload/cloudinary` - Upload image to Cloudinary
+- `DELETE /upload/cloudinary/:id` - Delete image from Cloudinary (Admin only)
 
 ## Installation
 
