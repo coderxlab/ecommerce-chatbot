@@ -12,7 +12,7 @@ const Meta = ({ title, description, keywords }) => {
 };
 
 Meta.defaultProps = {
-  title: 'BuyMed Shop | Home',
+  title: 'MedNow Shop | Home',
   description: 'We sell the best medical products',
   keywords: 'medical, healthcare, medicine, pharmacy',
 };

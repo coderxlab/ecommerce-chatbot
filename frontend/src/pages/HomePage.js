@@ -33,7 +33,7 @@ const HomePage = () => {
       <Meta />
       <div className="hero">
         <Container>
-          <h1>Welcome to BuyMed Shop</h1>
+          <h1>Welcome to MedNow Shop</h1>
           <p className="lead">Your one-stop shop for all your medical and healthcare needs</p>
         </Container>
       </div>

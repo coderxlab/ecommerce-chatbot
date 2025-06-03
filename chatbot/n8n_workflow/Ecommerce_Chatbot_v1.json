@@ -4,7 +4,7 @@
     {
       "parameters": {
         "public": true,
-        "initialMessages": "Hi there! 👋\nI'm a online shop assistant at Trendi. How can I assist you today?",
+        "initialMessages": "Hi there! 👋\nI'm a online shop assistant at MedNow. How can I assist you today?",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
@@ -257,7 +257,7 @@
         "promptType": "define",
         "text": "={{ $('When chat message received').item.json.chatInput }}",
         "options": {
-          "systemMessage": "You are Trendi's online shopping assistant, designed to help customers with product searches, order retrieval, order placement, delivery information, and other general inquiries. Always identify the customer's primary intent from these five categories, ask clarifying questions when needed, provide concise and accurate information, verify order details before sharing information, maintain customer privacy, and use a conversational yet professional tone that represents the Trendi brand positively while ensuring a seamless shopping experience."
+          "systemMessage": "You are MedNow's online shopping assistant, designed to help customers with product searches, order retrieval, order placement, delivery information, and other general inquiries. Always identify the customer's primary intent from these five categories, ask clarifying questions when needed, provide concise and accurate information, verify order details before sharing information, maintain customer privacy, and use a conversational yet professional tone that represents the MedNow brand positively while ensuring a seamless shopping experience."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -351,7 +351,7 @@
     },
     {
       "parameters": {
-        "toolDescription": "Call the order retrieval API endpoint to access customer order information based on user queries.\nNote when extracting query parameters:\n- Either the user's email OR order ID is required to retrieve order information.\n- When a user asks \"show me my recent order for example@email.com\" or \"check my orders at user@trendi.com\", extract the email address from their query.\n- When a user asks \"check order #12345\", extract the order ID from their query.\n- If neither email nor order ID is provided in the query, ask the user to provide either one before proceeding.\n- Only proceed with the order retrieval once either a valid email address OR order ID has been provided by the user.\n- If the user provides both an order ID and email address, you can use both parameters to retrieve more specific order information.",
+        "toolDescription": "Call the order retrieval API endpoint to access customer order information based on user queries.\nNote when extracting query parameters:\n- Either the user's email OR order ID is required to retrieve order information.\n- When a user asks \"show me my recent order for example@email.com\" or \"check my orders at user@MedNow.com\", extract the email address from their query.\n- When a user asks \"check order #12345\", extract the order ID from their query.\n- If neither email nor order ID is provided in the query, ask the user to provide either one before proceeding.\n- Only proceed with the order retrieval once either a valid email address OR order ID has been provided by the user.\n- If the user provides both an order ID and email address, you can use both parameters to retrieve more specific order information.",
         "url": " http://localhost:8080/api/orders/track",
         "sendQuery": true,
         "queryParameters": {

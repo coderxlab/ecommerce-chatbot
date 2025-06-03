@@ -1,6 +1,6 @@
-# BuyMed E-commerce Frontend
+# MedNow E-commerce Frontend
 
-A modern e-commerce frontend for the BuyMed online store, built with React and Bootstrap.
+A modern e-commerce frontend for the MedNow online store, built with React and Bootstrap.
 
 ## Features
 

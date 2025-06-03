@@ -9,7 +9,7 @@ const Footer = () => {
       <Container>
         <Row>
           <Col md={4} className="mb-4">
-            <h5>BuyMed Shop</h5>
+            <h5>MedNow Shop</h5>
             <p>
               Your one-stop shop for all your medical and healthcare needs. We provide quality products at affordable prices.
             </p>
@@ -71,13 +71,13 @@ const Footer = () => {
               <strong>Phone:</strong> (123) 456-7890
             </p>
             <p>
-              <strong>Email:</strong> info@buymed.com
+              <strong>Email:</strong> info@MedNow.com
             </p>
           </Col>
         </Row>
         <Row>
           <Col className="text-center py-3">
-            <p>&copy; {new Date().getFullYear()} BuyMed Shop. All Rights Reserved.</p>
+            <p>&copy; {new Date().getFullYear()} MedNow Shop. All Rights Reserved.</p>
           </Col>
         </Row>
       </Container>
