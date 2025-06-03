@@ -3,7 +3,6 @@
 A modern e-commerce frontend for the MedNow online store, built with React and Bootstrap.
 
 ## Features
-
 - Responsive design for all devices
 - Product browsing and searching
 - Product filtering by category, price, and rating
