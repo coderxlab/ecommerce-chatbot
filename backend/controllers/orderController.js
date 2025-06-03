@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
 const Product = require('../models/productModel');
 const User = require('../models/userModel');
+const { sendOrderNotification } = require('../utils/emailService');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -52,6 +53,14 @@ const addOrderItems = asyncHandler(async (req, res) => {
       const product = await Product.findById(item.product);
       product.countInStock -= item.qty;
       await product.save();
+    }
+
+    // Send order notification email
+    try {
+      await sendOrderNotification(req.user.email, createdOrder);
+    } catch (error) {
+      console.error('Failed to send order notification:', error);
+      // Don't fail the order creation if email fails
     }
 
     res.status(201).json(createdOrder);
@@ -265,6 +274,14 @@ const addGuestOrderItems = asyncHandler(async (req, res) => {
     await product.save();
   }
 
+  // Send order notification email
+  try {
+    await sendOrderNotification(email, createdOrder);
+  } catch (error) {
+    console.error('Failed to send order notification:', error);
+    // Don't fail the order creation if email fails
+  }
+
   res.status(201).json(createdOrder);
 });
 
@@ -401,6 +418,15 @@ const createDraftOrder = asyncHandler(async (req, res) => {
   });
 
   const createdOrder = await order.save();
+
+  // Send order notification email
+  try {
+    await sendOrderNotification(email, createdOrder);
+  } catch (error) {
+    console.error('Failed to send order notification:', error);
+    // Don't fail the order creation if email fails
+  }
+
   res.status(201).json(createdOrder);
 });
 
