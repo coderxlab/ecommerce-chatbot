@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env.production
+    restart: always
+    networks:
+      - ecommerce-network
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    env_file:
+      - ./frontend/.env.production
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - ecommerce-network
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    env_file:
+      - ./admin/.env.production
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
+

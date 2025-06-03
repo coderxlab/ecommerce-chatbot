@@ -1,0 +1,345 @@
+{
+  "name": "Order Placement Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chatInput"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        140,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-3.5-turbo",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        260,
+        380
+      ],
+      "id": "162fb874-83df-4744-bb6f-c5f482a2dbe6",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
+        "url": "http://localhost:8080/api/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "pageNumber",
+              "value": "=1"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "=products"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        540,
+        380
+      ],
+      "id": "63ad6e66-528b-4d15-9261-e9dcac08995c",
+      "name": "Get Product API"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        380
+      ],
+      "id": "4d7486e4-6ffb-4619-b7f2-6cfe582dddbe",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        820,
+        360
+      ],
+      "id": "7f4f60fc-9d68-4467-81c7-f858d06f1d31",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uIvn8geLsk78mV9g",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"description\": \"Order information for an e-commerce transaction\",\n  \"properties\": {\n    \"orderItems\": {\n      \"type\": \"array\",\n      \"description\": \"List of products in the order\",\n      \"items\": {\n        \"type\": \"object\",\n        \"description\": \"Individual product in the order\",\n        \"properties\": {\n          \"product\": {\n            \"type\": \"string\",\n            \"description\": \"Unique identifier for the product\"\n          },\n          \"name\": {\n            \"type\": \"string\",\n            \"description\": \"Name of the product\"\n          },\n          \"image\": {\n            \"type\": \"string\",\n            \"format\": \"uri\",\n            \"description\": \"URL to the product image stored in Cloudinary\"\n          },\n          \"price\": {\n            \"type\": \"number\",\n            \"description\": \"Price of a single unit of the product\"\n          },\n          \"countInStock\": {\n            \"type\": \"integer\",\n            \"description\": \"Available quantity of the product in inventory\"\n          },\n          \"qty\": {\n            \"type\": \"integer\",\n            \"description\": \"Quantity of this product ordered by the customer\"\n          }\n        },\n        \"required\": [\"product\", \"name\", \"image\", \"price\", \"countInStock\", \"qty\"]\n      }\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"format\": \"email\",\n      \"description\": \"Customer's email address\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1020,
+        360
+      ],
+      "id": "4cadcaa0-e7b8-4353-9b63-613b8b487c6e",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a specialized output parser for order details information. Your task is to process and format the raw data into a structured JSON format that follows a specific schema."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        840,
+        200
+      ],
+      "id": "3dc03820-7ada-4450-8a8b-b9929c0ad9f5",
+      "name": "Body Parser for Place an Order API",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8080/api/orders/draft",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "orderItems",
+              "value": "={{$json.output.orderItems}}"
+            },
+            {
+              "name": "email",
+              "value": "={{$json.output.email}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        200
+      ],
+      "id": "9d0204f1-644d-4af2-8b36-78c6926834a5",
+      "name": "Create a draft order"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ab51af67-949d-48bb-9a7c-8827da962adc",
+              "leftValue": "={{ $json.output.orderItems }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        200
+      ],
+      "id": "9697af01-b95c-4fc3-b7fb-aa4e9bd99bee",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.chatInput}}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are Order Placement Agent, a dedicated agent responsible for guiding customers through the complete ordering process. Your primary function is to help customers during the process of placing new orders efficiently and accurately.\n\nYour responsibilities include:\n- Collecting all necessary product details (name and quantity)\n- Call Product Retrieval API to get the real-time details of the products\n- Verifying product availability before proceeding\n- If the product(s) are unavailable, Product Retrieval API fails, or there is not enough product in stock, just return {\n  \"error\": true\n  \"reason\": \"Reasons for the failures\"\n}\n.\n- If all condition meet, return user's email and the details of the product(s) including IDs, names, images, prices, available quantities, and order quantities. Look at the response instruction for more details\nResponse instructions:\n{\n  \"orderItems\": {\n    \"description\": \"Array of products being ordered, each containing product details\",\n    \"type\": \"array\"\n  },\n  \"orderItems[].product\": {\n    \"description\": \"Product's unique identifier\",\n    \"type\": \"string\"\n  },\n  \"orderItems[].name\": {\n    \"description\": \"Product's display name\",\n    \"type\": \"string\"\n  },\n  \"orderItems[].image\": {\n    \"description\": \"URL to the product image on Cloudinary\",\n    \"type\": \"string\"\n  },\n  \"orderItems[].price\": {\n    \"description\": \"Product's unit price\",\n    \"type\": \"number\"\n  },\n  \"orderItems[].countInStock\": {\n    \"description\": \"Available quantity in inventory\",\n    \"type\": \"integer\"\n  },\n  \"orderItems[].qty\": {\n    \"description\": \"Quantity being ordered\",\n    \"type\": \"integer\"\n  },\n  \"email\": {\n    \"description\": \"Customer's email address\",\n    \"type\": \"string\"\n  }\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        360,
+        200
+      ],
+      "id": "9e2be81b-32f6-4c68-b81d-1f4d1ed34f64",
+      "name": "Inventory Search Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Inventory Search Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Inventory Search Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product API": {
+      "ai_tool": [
+        [
+          {
+            "node": "Inventory Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Inventory Search Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Body Parser for Place an Order API",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Body Parser for Place an Order API",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Body Parser for Place an Order API": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft order": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Create a draft order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inventory Search Agent": {
+      "main": [
+        [
+          {
+            "node": "Body Parser for Place an Order API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "09025324-c855-44e8-867f-e934bcd2e74f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f3486bf56d2f869a09422d9a225cc5397d03576784dc768e07977a5c6d748ec6"
+  },
+  "id": "1MfwsaiK6vH4hp9f",
+  "tags": []
+}

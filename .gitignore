@@ -1,2 +1,4 @@
 .env
+.env.production
 node_modules
+deployment-instructions.md
