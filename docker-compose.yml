@@ -3,8 +3,9 @@ version: '3'
 services:
   backend:
     build: ./backend
-    ports:
-      - "3000:3000"
+    # No need to expose backend port directly as it will be accessed via /api
+    # ports:
+    #   - "3000:3000"
     env_file:
       - ./backend/.env
     restart: always
@@ -16,11 +17,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "80:80"  # Main entry point for HTTP
     env_file:
       - ./frontend/.env
     depends_on:
       - backend
+      - admin
     restart: always
     networks:
       - ecommerce-network
@@ -29,8 +31,9 @@ services:
     build:
       context: ./admin
       dockerfile: Dockerfile
-    ports:
-      - "8080:80"
+    # No need to expose admin port directly as it will be accessed via /admin
+    # ports:
+    #   - "8080:80"
     env_file:
       - ./admin/.env
     depends_on:
@@ -42,4 +45,3 @@ services:
 networks:
   ecommerce-network:
     driver: bridge
-
