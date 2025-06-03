@@ -32,8 +32,8 @@ services:
       context: ./admin
       dockerfile: Dockerfile
     # No need to expose admin port directly as it will be accessed via /admin
-    # ports:
-    #   - "8080:80"
+    ports:
+      - "8080:80"
     env_file:
       - ./admin/.env
     depends_on:
