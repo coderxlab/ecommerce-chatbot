@@ -4,3 +4,4 @@ node_modules
 deployment-instructions.md
 .DS_Store
 ec2_key.pem
+circa_assets
