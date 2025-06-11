@@ -1,0 +1,526 @@
+{
+  "name": "Ecommerce_Chatbot_Messenger",
+  "nodes": [
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"category\": {\n      \"type\": [\"string\", \"null\"],\n      \"enum\": [\"Search Product\", \"Retrieve Order\", \"Place Order\", \"Retrieve Delivery Information\", \"Others\"],\n      \"description\": \"The user's intent\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        360,
+        580
+      ],
+      "id": "41713e15-62f9-4e87-beb6-d17613e5a1da",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.entry[0].messaging[0].message.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a specialized classifier for e-commerce user intents. Your task is to analyze user messages and identify their primary intent according to a specific JSON schema. You should categorize each query based on whether the user is trying to search for products, retrieve order information, place an order, or get delivery details."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        160,
+        360
+      ],
+      "id": "ec3afdd8-78fd-482c-87fa-3bb10a2e648a",
+      "name": "Intent Classifier",
+      "alwaysOutputData": true,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-haiku-20241022",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        880,
+        220
+      ],
+      "id": "e5ed44ad-f0c5-49a7-b3d2-7ec036ea1640",
+      "name": "OpenRouter Chat Model5",
+      "credentials": {
+        "openRouterApi": {
+          "id": "yr6wXtFCZNRbgCLm",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.entry[0].messaging[0].sender.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        220
+      ],
+      "id": "c9387d57-e640-4b86-bdef-67015cea7ac7",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the order retrieval API endpoint to access customer order information based on user queries.\nNote when extracting query parameters:\n- Either the user's email OR order ID is required to retrieve order information.\n- When a user asks \"show me my recent order for example@email.com\" or \"check my orders at user@MedNow.com\", extract the email address from their query.\n- When a user asks \"check order #12345\", extract the order ID from their query.\n- If neither email nor order ID is provided in the query, ask the user to provide either one before proceeding.\n- Only proceed with the order retrieval once either a valid email address OR order ID has been provided by the user.\n- If the user provides both an order ID and email address, you can use both parameters to retrieve more specific order information.",
+        "url": "http://54.159.130.151/api/orders/track",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "orderId",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        220
+      ],
+      "id": "8d93f5b0-2e84-489e-8633-f4b7e3a1f10c",
+      "name": "Get Order API1"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
+        "url": "http://54.159.130.151/api/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "pageNumber",
+              "value": "=1"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "=products"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        220
+      ],
+      "id": "fee11526-c4bb-4c20-86b1-aad7ea36b0fe",
+      "name": "Get Product API"
+    },
+    {
+      "parameters": {
+        "description": "You are Order Placement Agent, a dedicated agent responsible for guiding customers through the complete ordering process. Your primary function is to help customers place new orders efficiently and accurately.\n\nYour responsibilities include:\n- Collecting all necessary product details (name and quantity)\n- Call Product Retrieval API to get the real-time details of the products\n- Verifying product availability before proceeding\n- Confirming order details before final submission\n- Providing order confirmation numbers and estimated delivery dates\n\nAlways maintain a helpful, patient tone while efficiently moving the customer through the ordering process. Ask clarifying questions when information is incomplete. Prioritize accuracy over speed to ensure customer satisfaction. \n\nAfter order completion, send an email which contains the order details and link to payment page for the customer.",
+        "workflowId": {
+          "__rl": true,
+          "value": "qlpHeoJ92yYut9JW",
+          "mode": "list",
+          "cachedResultName": "Order_Placement_Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatInput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('chatInput', ``, 'string') }}",
+            "sessionId": "={{ $('Webhook').item.json.body.entry[0].messaging[0].recipient.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chatInput",
+              "displayName": "chatInput",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1560,
+        220
+      ],
+      "id": "07273340-59ef-4319-8f3c-929ecbdf9262",
+      "name": "Order Placement Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-3.5-turbo",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        120,
+        580
+      ],
+      "id": "c1c382d3-b54b-40ed-b764-b89729f09a6c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "yr6wXtFCZNRbgCLm",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.entry[0].messaging[0].message.text }}",
+        "options": {
+          "systemMessage": "=You are MedNow's online shopping assistant, designed to help customers with product searches, order retrieval, order placement, delivery information, and other general inquiries. Your task is to\nStep 1: Classify user's query into the user's intent. The user's intent includes: \"Search Product\", \"Retrieve Order\", \"Place Order\", \"Retrieve Delivery Information\", \"Others\"\nStep 2: Route the user request to proper tool or agent based on the user's intent, extracted in Step 1\n\nDisplay images using markdown format (![Product Name](image_url)) rather than just showing links. When displaying results, always include product images if they are provided in the API response. Never make up or hallucinate product information - only present information that is explicitly returned by the API. If certain details are not available in the API response, acknowledge this limitation rather than inventing information. \n\nAlways use a conversational yet professional tone that represents the MedNow brand positively while ensuring a seamless shopping experience. \n\nExamples of how to route to proper tool or agent:\nUser's Intent: \"Search Product\" => Ask user for a specific keyword they want to  search. If the keyword is identified, call Tool: Call Search Product API\nUser's Intent: \"Retrieve Order\" => Tool: Call Order Retrieval API\nUser's Intent: \"Place Order\" => \n  Check if the product(s) exist(s). \n  - If the product(s) exist(s), ask the customer for their email, then call Tool: Call Order Placement Agent with the input which contain product details, quantity, and user's email\n  - If the product(s) don't exist(s), just acknowledge that the product is unavailable\nUser's Intent: \"Retrieve Delivery Information\" =>  Tool: Call Delivery Retrieval API\nUser's Intent: \"Others\" => DO NOT call any tool/agent, just return the answer",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "id": "abc85497-4493-4608-91f5-8ad4c38a2243",
+      "name": "Supervisor Agent"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "5533aa3d-d551-406f-a447-d8def0bcacdd",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        -20
+      ],
+      "id": "be9dfffe-bed3-4851-adea-75b3e0543aa0",
+      "name": "Webhook",
+      "webhookId": "5533aa3d-d551-406f-a447-d8def0bcacdd"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "06df5c50-862e-499c-9dce-a386f631a3ed",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "1617391b-4573-4ec8-b5e9-cb2bebc4c44b",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "mednow-chatbot-webhook-secret",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        500,
+        -200
+      ],
+      "id": "e0f1d68b-b1f6-4b9e-958b-a84c05ab59a8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1320,
+        0
+      ],
+      "id": "9ddbe74f-34b9-4a37-adfc-066274183d13",
+      "name": "Send Back to FB"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v22.0/682221121639066/messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "EAAu2ddeF3KQBOxcbdnskvVvYf9WMEtyCQh9UeUZCTCkYjhuZC2mnjy7cunuGiJkslhz5Hy9fCTtmxyLZCMBmhNaXPFesq7ynyllP3MTf578nfxPT4wBkZAFIee6HWOhes08dlwBz4dkwinekNwJySF7zZBzZAXjbHCxs3X3HgOiw62OCEFSv2GmG1EotHlZBatiU1ZAlAsFMkAZDZD"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $('Webhook').item.json.body.entry[0].messaging[0].sender.id }}\"\n  },\n  \"messaging_type\": \"RESPONSE\",\n  \"message\": {\n    \"text\": {{ JSON.stringify($('Supervisor Agent').item.json.output) }}\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        20
+      ],
+      "id": "01f10811-80ed-4e01-af08-a438dfecda1e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        740,
+        -300
+      ],
+      "id": "aa80e163-bc90-4d42-b785-a5418d030b68",
+      "name": "OK response"
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        740,
+        -120
+      ],
+      "id": "cc79eabb-6517-4d5f-96dc-7ea8869309d2",
+      "name": "Error Response"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        460
+      ],
+      "id": "ffdb2729-ba18-4739-bf67-563f70e35708",
+      "name": "Vector Store Retriever"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Classifier": {
+      "main": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Supervisor Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "Supervisor Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Order API1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product API": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order Placement Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Supervisor Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supervisor Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "OK response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supervisor Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Back to FB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Back to FB": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f6b923b5-7557-4cce-8bee-a1f020c313b2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "93c291d04add164f13336fd6f37fbb20a4058caaf581195a633f87a070d869d2"
+  },
+  "id": "Qb2BM6huJzMWzH8K",
+  "tags": []
+}

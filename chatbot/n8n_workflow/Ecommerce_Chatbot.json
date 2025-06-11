@@ -1,19 +1,19 @@
 {
-  "name": "Ecommerce Chatbot",
+  "name": "Ecommerce_Chatbot",
   "nodes": [
     {
       "parameters": {
         "public": true,
-        "initialMessages": "Hi there! 👋\nI'm a online shop assistant at MedNow. How can I assist you today?",
+        "initialMessages": "Hi there! 👋\nI'm an online shop assistant at MedNow. How can I assist you today?",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        -380,
-        -20
+        200,
+        0
       ],
-      "id": "5c5fde1d-17fe-4ef6-ac65-ac5249538f34",
+      "id": "ab65f280-9db1-455c-aa64-db1ffb460bb4",
       "name": "When chat message received",
       "webhookId": "ddbb217e-0cbf-4557-be52-4400a03ae949"
     },
@@ -25,31 +25,11 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        180,
-        180
+        560,
+        200
       ],
-      "id": "40416ebd-be46-4442-a793-eed4c5693ebb",
+      "id": "a620261b-de64-45d7-9ff2-36991e92b977",
       "name": "Structured Output Parser"
-    },
-    {
-      "parameters": {
-        "model": "openai/gpt-3.5-turbo",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        -60,
-        160
-      ],
-      "id": "ff61dea6-130c-49ef-8fe7-66aac8daec9c",
-      "name": "OpenRouter Chat Model1",
-      "credentials": {
-        "openRouterApi": {
-          "id": "uIvn8geLsk78mV9g",
-          "name": "OpenRouter account"
-        }
-      }
     },
     {
       "parameters": {
@@ -68,31 +48,13 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        0,
-        -20
+        380,
+        0
       ],
-      "id": "45892a21-bbbe-4c29-aad0-f14e448834f0",
+      "id": "1ba5dd02-c829-486b-a7de-8132e3ee4abe",
       "name": "Intent Classifier",
       "alwaysOutputData": true,
       "retryOnFail": true
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $('When chat message received').item.json.chatInput }}",
-        "options": {
-          "systemMessage": "=You are MedNow's online shopping assistant, designed to help customers with product searches, order retrieval, order placement, delivery information, and other general inquiries. Your task is to use the provided USER'S INTENT below to route the user request to proper tool or agent. \n\nDisplay images using markdown format (![Product Name](image_url)) rather than just showing links. When displaying results, always include product images if they are provided in the API response. Never make up or hallucinate product information - only present information that is explicitly returned by the API. If certain details are not available in the API response, acknowledge this limitation rather than inventing information. \n\nAlways use a conversational yet professional tone that represents the MedNow brand positively while ensuring a seamless shopping experience. \n\nUSER'S INTENT: {{ $json.output.category }}\n\nExamples of how to route to proper tool or agent:\nUser's Intent: \"Search Product\" => Ask user for a specific keyword they want to  search. If the keyword is identified, call Tool: Call Search Product API\nUser's Intent: \"Retrieve Order\" => Tool: Call Order Retrieval API\nUser's Intent: \"Place Order\" => \n  Check if the product(s) exist(s). \n  - If the product(s) exist(s), ask the customer for their email, then call Tool: Call Order Placement Agent with the input which contain product details, quantity, and user's email\n  - If the product(s) don't exist(s), just acknowledge that the product is unavailable\nUser's Intent: \"Retrieve Delivery Information\" =>  Tool: Call Delivery Retrieval API\nUser's Intent: \"Others\" => DO NOT call any tool/agent, just return the answer",
-          "maxIterations": 5
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2,
-      "position": [
-        580,
-        -20
-      ],
-      "id": "3ac773cb-6b2b-4780-bfee-3ef84418af3e",
-      "name": "AI Agent"
     },
     {
       "parameters": {
@@ -102,14 +64,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        500,
+        700,
         200
       ],
-      "id": "a7107090-6711-4ee8-938f-a9e8190221f7",
+      "id": "20b78483-5c3b-46fd-a252-84fe69a5b41b",
       "name": "OpenRouter Chat Model5",
       "credentials": {
         "openRouterApi": {
-          "id": "uIvn8geLsk78mV9g",
+          "id": "yr6wXtFCZNRbgCLm",
           "name": "OpenRouter account"
         }
       }
@@ -122,16 +84,16 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        660,
+        840,
         200
       ],
-      "id": "7bde0b31-8870-4bb6-9172-a86459e74e29",
+      "id": "4398dda6-aee8-4aae-ac20-b6debb42c353",
       "name": "Simple Memory2"
     },
     {
       "parameters": {
         "toolDescription": "Call the order retrieval API endpoint to access customer order information based on user queries.\nNote when extracting query parameters:\n- Either the user's email OR order ID is required to retrieve order information.\n- When a user asks \"show me my recent order for example@email.com\" or \"check my orders at user@MedNow.com\", extract the email address from their query.\n- When a user asks \"check order #12345\", extract the order ID from their query.\n- If neither email nor order ID is provided in the query, ask the user to provide either one before proceeding.\n- Only proceed with the order retrieval once either a valid email address OR order ID has been provided by the user.\n- If the user provides both an order ID and email address, you can use both parameters to retrieve more specific order information.",
-        "url": " http://localhost:8080/api/orders/track",
+        "url": "http://54.159.130.151/api/orders/track",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -150,16 +112,16 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        900,
+        980,
         200
       ],
-      "id": "f837b618-2eba-48b9-bd22-f939f281b91f",
+      "id": "bed52b93-12d9-491e-b2f3-802600d2ef81",
       "name": "Get Order API1"
     },
     {
       "parameters": {
         "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
-        "url": "http://localhost:8080/api/products",
+        "url": "http://54.159.130.151/api/products",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -180,10 +142,10 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        1040,
+        1120,
         200
       ],
-      "id": "9a5b08e5-a31b-4951-a37a-94217117e7c4",
+      "id": "8a57e9d2-7c4f-4a4f-9a25-5e06a1fc627b",
       "name": "Get Product API"
     },
     {
@@ -191,18 +153,17 @@
         "description": "You are Order Placement Agent, a dedicated agent responsible for guiding customers through the complete ordering process. Your primary function is to help customers place new orders efficiently and accurately.\n\nYour responsibilities include:\n- Collecting all necessary product details (name and quantity)\n- Call Product Retrieval API to get the real-time details of the products\n- Verifying product availability before proceeding\n- Confirming order details before final submission\n- Providing order confirmation numbers and estimated delivery dates\n\nAlways maintain a helpful, patient tone while efficiently moving the customer through the ordering process. Ask clarifying questions when information is incomplete. Prioritize accuracy over speed to ensure customer satisfaction. \n\nAfter order completion, send an email which contains the order details and link to payment page for the customer.",
         "workflowId": {
           "__rl": true,
-          "value": "1MfwsaiK6vH4hp9f",
+          "value": "qlpHeoJ92yYut9JW",
           "mode": "list",
-          "cachedResultName": "Order Placement Agent"
+          "cachedResultName": "Order_Placement_Agent"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "chatInput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('chatInput', ``, 'string') }}"
+            "chatInput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('chatInput', ``, 'string') }}",
+            "sessionId": "={{ $('When chat message received').item.json.sessionId }}"
           },
-          "matchingColumns": [
-            "chatInput"
-          ],
+          "matchingColumns": [],
           "schema": [
             {
               "id": "chatInput",
@@ -211,8 +172,16 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
             }
           ],
           "attemptToConvertTypes": false,
@@ -222,11 +191,49 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        1180,
+        1280,
         200
       ],
-      "id": "19e5a139-b57a-4196-a128-764754a68659",
+      "id": "14ca6ff0-e92e-4776-ab58-def6becc61aa",
       "name": "Order Placement Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-3.5-turbo",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        340,
+        220
+      ],
+      "id": "2f3ad010-4402-4b02-87ea-143886363f3b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "yr6wXtFCZNRbgCLm",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "=You are MedNow's online shopping assistant, designed to help customers with product searches, order retrieval, order placement, delivery information, and other general inquiries. Your task is to use the provided USER'S INTENT below to route the user request to proper tool or agent. \n\nDisplay images using markdown format (![Product Name](image_url)) rather than just showing links. When displaying results, always include product images if they are provided in the API response. Never make up or hallucinate product information - only present information that is explicitly returned by the API. If certain details are not available in the API response, acknowledge this limitation rather than inventing information. \n\nAlways use a conversational yet professional tone that represents the MedNow brand positively while ensuring a seamless shopping experience. \n\nUSER'S INTENT: {{ $json.output.category }}\n\nExamples of how to route to proper tool or agent:\nUser's Intent: \"Search Product\" => Ask user for a specific keyword they want to  search. If the keyword is identified, call Tool: Call Search Product API\nUser's Intent: \"Retrieve Order\" => Tool: Call Order Retrieval API\nUser's Intent: \"Place Order\" => \n  Check if the product(s) exist(s). \n  - If the product(s) exist(s), ask the customer for their email, then call Tool: Call Order Placement Agent with the input which contain product details, quantity, and user's email\n  - If the product(s) don't exist(s), just acknowledge that the product is unavailable\nUser's Intent: \"Retrieve Delivery Information\" =>  Tool: Call Delivery Retrieval API\nUser's Intent: \"Others\" => DO NOT call any tool/agent, just return the answer",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        740,
+        0
+      ],
+      "id": "cfec4b01-8fa9-42dd-a1c0-0a7581bc8fa5",
+      "name": "Supervisor Agent"
     }
   ],
   "pinData": {},
@@ -253,38 +260,22 @@
         ]
       ]
     },
-    "OpenRouter Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Intent Classifier",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Intent Classifier": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Supervisor Agent",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "AI Agent": {
-      "main": [
-        []
-      ]
-    },
     "OpenRouter Chat Model5": {
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "Supervisor Agent",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -295,7 +286,7 @@
       "ai_memory": [
         [
           {
-            "node": "AI Agent",
+            "node": "Supervisor Agent",
             "type": "ai_memory",
             "index": 0
           }
@@ -306,7 +297,7 @@
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "Supervisor Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -317,7 +308,7 @@
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "Supervisor Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -328,8 +319,19 @@
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "Supervisor Agent",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -340,11 +342,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7e0bcf9f-addc-469d-b248-217290f3c1d0",
+  "versionId": "e396ecc9-0264-4d58-a962-7907beae8640",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "f3486bf56d2f869a09422d9a225cc5397d03576784dc768e07977a5c6d748ec6"
+    "instanceId": "93c291d04add164f13336fd6f37fbb20a4058caaf581195a633f87a070d869d2"
   },
-  "id": "m8KSB8eRNGuWbb9z",
+  "id": "FHm6RGlQpdL9MVMj",
   "tags": []
 }

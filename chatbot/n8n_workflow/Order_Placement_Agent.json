@@ -1,5 +1,5 @@
 {
-  "name": "Order Placement Agent",
+  "name": "Order_Placement_Agent",
   "nodes": [
     {
       "parameters": {
@@ -14,13 +14,13 @@
           ]
         }
       },
-      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "id": "76fbb5c1-1696-4992-903e-da67322ddb70",
       "typeVersion": 1.1,
       "name": "When Executed by Another Workflow",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "position": [
-        140,
-        200
+        0,
+        0
       ]
     },
     {
@@ -31,57 +31,27 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        260,
-        380
+        120,
+        180
       ],
-      "id": "162fb874-83df-4744-bb6f-c5f482a2dbe6",
+      "id": "fae26517-1d0e-4ad4-98f3-d89a990d0a48",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "uIvn8geLsk78mV9g",
+          "id": "yr6wXtFCZNRbgCLm",
           "name": "OpenRouter account"
         }
       }
-    },
-    {
-      "parameters": {
-        "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
-        "url": "http://localhost:8080/api/products",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "keyword",
-              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
-            },
-            {
-              "name": "pageNumber",
-              "value": "=1"
-            }
-          ]
-        },
-        "options": {},
-        "optimizeResponse": true,
-        "dataField": "=products"
-      },
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.2,
-      "position": [
-        540,
-        380
-      ],
-      "id": "63ad6e66-528b-4d15-9261-e9dcac08995c",
-      "name": "Get Product API"
     },
     {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        400,
-        380
+        260,
+        180
       ],
-      "id": "4d7486e4-6ffb-4619-b7f2-6cfe582dddbe",
+      "id": "77af6885-30a3-44c3-8d1c-e2124e120ea2",
       "name": "Simple Memory"
     },
     {
@@ -92,14 +62,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        820,
-        360
+        640,
+        180
       ],
-      "id": "7f4f60fc-9d68-4467-81c7-f858d06f1d31",
+      "id": "523558e0-1229-41ba-a509-1ad37eeac901",
       "name": "OpenRouter Chat Model4",
       "credentials": {
         "openRouterApi": {
-          "id": "uIvn8geLsk78mV9g",
+          "id": "yr6wXtFCZNRbgCLm",
           "name": "OpenRouter account"
         }
       }
@@ -112,10 +82,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        1020,
-        360
+        820,
+        180
       ],
-      "id": "4cadcaa0-e7b8-4353-9b63-613b8b487c6e",
+      "id": "a5441413-f565-4d1b-bc05-4e623cd90636",
       "name": "Structured Output Parser1"
     },
     {
@@ -135,10 +105,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.7,
       "position": [
-        840,
-        200
+        640,
+        0
       ],
-      "id": "3dc03820-7ada-4450-8a8b-b9929c0ad9f5",
+      "id": "3d657ba1-190f-4029-ae94-f131fe1af661",
       "name": "Body Parser for Place an Order API",
       "alwaysOutputData": true,
       "retryOnFail": true
@@ -146,7 +116,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://localhost:8080/api/orders/draft",
+        "url": "http://54.159.130.151/api/orders/draft",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -165,10 +135,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1620,
-        200
+        1340,
+        0
       ],
-      "id": "9d0204f1-644d-4af2-8b36-78c6926834a5",
+      "id": "851dccf3-5e65-4548-9b83-f42428657358",
       "name": "Create a draft order"
     },
     {
@@ -199,10 +169,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1300,
-        200
+        1060,
+        0
       ],
-      "id": "9697af01-b95c-4fc3-b7fb-aa4e9bd99bee",
+      "id": "9f8d0a6b-9431-488e-b9be-70b1ca566323",
       "name": "If1"
     },
     {
@@ -217,11 +187,41 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        360,
-        200
+        200,
+        0
       ],
-      "id": "9e2be81b-32f6-4c68-b81d-1f4d1ed34f64",
+      "id": "b3a87ebb-7b31-4b9d-8b94-c4205de752a1",
       "name": "Inventory Search Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call the product search API endpoint to retrieve all products or specific products matching user queries. \nNote when extracting query parameters:\n- When a user asks \"show me polo shirts\", the agent should extract \"polo\" as the keyword \n- When a user asks \"show all products\" or \"show top products\", this means the user wants to search for all products. In this case, the keyword should be an empty string.\n- If you can't extract a keyword, just show an empty string as the keyword",
+        "url": "http://54.159.130.151/api/products",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "pageNumber",
+              "value": "=1"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "=products"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        180
+      ],
+      "id": "d205752e-f7ab-41f9-8a4b-68784a6582a0",
+      "name": "Inventory Check API"
     }
   ],
   "pinData": {},
@@ -243,17 +243,6 @@
           {
             "node": "Inventory Search Agent",
             "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get Product API": {
-      "ai_tool": [
-        [
-          {
-            "node": "Inventory Search Agent",
-            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -303,11 +292,6 @@
         ]
       ]
     },
-    "Create a draft order": {
-      "main": [
-        []
-      ]
-    },
     "If1": {
       "main": [
         [
@@ -329,17 +313,28 @@
           }
         ]
       ]
+    },
+    "Inventory Check API": {
+      "ai_tool": [
+        [
+          {
+            "node": "Inventory Search Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "09025324-c855-44e8-867f-e934bcd2e74f",
+  "versionId": "7686069d-7988-4027-ab76-8518430c2afd",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "f3486bf56d2f869a09422d9a225cc5397d03576784dc768e07977a5c6d748ec6"
+    "instanceId": "93c291d04add164f13336fd6f37fbb20a4058caaf581195a633f87a070d869d2"
   },
-  "id": "1MfwsaiK6vH4hp9f",
+  "id": "qlpHeoJ92yYut9JW",
   "tags": []
 }
